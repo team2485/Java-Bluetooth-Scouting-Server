@@ -1,1 +1,0 @@
-"# Java-Bluetooth-Scouting-Server" 
