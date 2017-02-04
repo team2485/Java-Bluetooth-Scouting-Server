@@ -10,12 +10,15 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.first.team2485.scoutingserver.bluetooth.BluetoothLoop;
+import org.first.team2485.scoutingserver.bluetooth.HTTPUtils;
+
 public class Server {
 
 	final private static String SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9crlL01Qs2531MZDMRqJxBdMAwGPhpT1PvG7-sJJrxCLAfafI/exec";
 	final private static String DATA_STARTS_WITH = "ScoutingData~";
 
-	public static void main(String[] args) throws FileSystemException {
+	public static void main(String[] args) throws Exception {
 
 		String home = System.getProperty("user.home");
 		File pathToDownloads = new File(home, "Downloads");
@@ -31,6 +34,9 @@ public class Server {
 
 		System.out.println("path to downloads: " + pathToDownloads);
 
+		Thread thread = new Thread(new BluetoothLoop());
+		thread.start();
+		
 		while (true) {
 			
 			//Iterate through folder containing scouting data
@@ -82,6 +88,13 @@ public class Server {
 						}
 					}
 				}
+			}
+			
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
