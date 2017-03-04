@@ -2,6 +2,7 @@ package org.first.team2485.scoutingserver.bluetooth;
 
 import javax.swing.JOptionPane;
 
+import org.first.team2485.utils.HTTPUtils;
 import org.json.JSONObject;
 
 public class BluetoothLoop implements Runnable {
@@ -10,13 +11,12 @@ public class BluetoothLoop implements Runnable {
 	private final int maxBet = 100;
 	private int pool;
 	private int nextMatch = 0;
-	
-	
 	@Override
 	public void run() {
 		do {
 			nextMatch = Integer.parseInt(JOptionPane.showInputDialog(null, "Please input the next match that will be scouted."));
-		} while (nextMatch != 0);
+			System.out.println(nextMatch);
+		} while (nextMatch == 0);
 		
 		while (true) {
 			
