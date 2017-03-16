@@ -12,7 +12,6 @@ import java.nio.file.StandardCopyOption;
 
 import javax.swing.JFileChooser;
 
-import org.first.team2485.scoutingserver.bluetooth.BluetoothLoop;
 import org.first.team2485.utils.HTTPUtils;
 
 public class Server {
@@ -120,9 +119,8 @@ public class Server {
 			}
 			
 			try {
-				Thread.sleep(30000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
