@@ -5,15 +5,13 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+@SuppressWarnings("unused")
 public class HTTPUtils {
 
 	private static String USER_AGENT = "Mozilla/5.0";
-
 
 	// HTTP GET request
 
@@ -52,7 +50,6 @@ public class HTTPUtils {
 		
 		//add request header
 		con.setRequestProperty("User-Agent", USER_AGENT);
-		
 		
 		int responseCode = con.getResponseCode();
 		
@@ -116,7 +113,5 @@ public class HTTPUtils {
 		
 		//print result
 		return response.toString();
-
 	}
-
 }
