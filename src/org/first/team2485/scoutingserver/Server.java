@@ -11,11 +11,14 @@ import java.nio.file.StandardCopyOption;
 import javax.swing.JFileChooser;
 
 import org.first.team2485.utils.HTTPUtils;
+import org.first.team2485.utils.USBDriveDataPuller;
 
 public class Server {
 
-	final private static String SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeGy9zlXqqRcRvhShhR5W870y0JS2D4OwUMUi16lCHtikuyD6v/exec";
-	final private static String DATA_STARTS_WITH = "ScoutingData~";
+	final private static String SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdQigOa6DuajIWo7HWFyCAGS0hLCPkcB-HbfSkYuk29qEQqEq3/exec";
+	final public static String DATA_STARTS_WITH = "ScoutingData~";
+	
+	private static File sentDataFolder;
 
 	public static void main(String[] args) throws Exception {
 
@@ -38,7 +41,7 @@ public class Server {
 
 		System.out.println("Reading incoming data from: " + incomingDataFolder.getAbsolutePath());
 
-		File sentDataFolder = new File(incomingDataFolder, "SentScoutingData");
+		sentDataFolder = new File(incomingDataFolder, "SentScoutingData");
 
 		if (!sentDataFolder.isDirectory()) {
 			boolean madeDirs = sentDataFolder.mkdirs();
@@ -47,6 +50,8 @@ public class Server {
 				throw new FileSystemException("Failed to create necessary storage folder");
 			}
 		}
+		
+		USBDriveDataPuller.start();
 
 		while (true) {
 
@@ -65,34 +70,7 @@ public class Server {
 
 					// If it is scouting data (name matches)
 					if (fileName.startsWith(DATA_STARTS_WITH)) {
-
-						BufferedReader bufferedReader = null;
-						try {
-
-							// Read the scouting data
-							FileReader fileReader = new FileReader(curFile);
-							bufferedReader = new BufferedReader(fileReader);
-							String scoutingData = bufferedReader.readLine();
-							bufferedReader.close();
-
-							// Create our POST request
-
-							String[] header = { "data" };
-							String[] param = { scoutingData };
-
-							HTTPUtils.sendPost(SCRIPT_URL, header, param);
-
-							System.out.println("Sent 'POST' request to URL");
-
-							// Move the scouting data into another folder
-
-							Files.move(curFile.toPath(), new File(sentDataFolder, fileName).toPath(),
-									StandardCopyOption.REPLACE_EXISTING);
-
-							System.out.println("Successfully posted and transfered file.");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						sendDataAndMoveFile(curFile);
 					}
 				}
 			}
@@ -102,6 +80,39 @@ public class Server {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public static void sendDataAndMoveFile(File curFile) {
+		
+		String fileName = curFile.getName();
+		
+		BufferedReader bufferedReader = null;
+		try {
+
+			// Read the scouting data
+			FileReader fileReader = new FileReader(curFile);
+			bufferedReader = new BufferedReader(fileReader);
+			String scoutingData = bufferedReader.readLine();
+			bufferedReader.close();
+
+			// Create our POST request
+
+			String[] header = { "data" };
+			String[] param = { scoutingData };
+
+			HTTPUtils.sendPost(SCRIPT_URL, header, param);
+
+			System.out.println("Sent 'POST' request to URL");
+
+			// Move the scouting data into another folder
+
+			Files.move(curFile.toPath(), new File(sentDataFolder, fileName).toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
+
+			System.out.println("Successfully posted and transfered file.");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
